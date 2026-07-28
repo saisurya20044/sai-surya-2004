@@ -1,39 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guntur Pulaos & Filter Coffees</title>
-  <link rel="stylesheet" href="style.css?v=NOFULL">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I'm Sorry</title>
+<style>
+  :root{
+    --ink:#f7ece2;
+    --ink-soft:#e8d4c8;
+    --bg-1:#241016;
+    --bg-2:#3a1420;
+    --rose:#e8a0a8;
+    --rose-deep:#c76b7a;
+    --gold:#d4af7a;
+    --card:#2f1520;
+    --card-border:rgba(212,175,122,0.25);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  @font-face{
+    font-display: swap;
+  }
+
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(199,107,122,0.25), transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(212,175,122,0.12), transparent 55%),
+      linear-gradient(160deg, var(--bg-1), var(--bg-2));
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    color: var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* ambient candle glow */
+  .glow{
+    position:fixed;
+    width:600px; height:600px;
+    border-radius:50%;
+    background: radial-gradient(circle, rgba(232,160,168,0.18), transparent 70%);
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    animation: flicker 6s ease-in-out infinite;
+  }
+  @keyframes flicker{
+    0%,100%{opacity:0.7; transform:translate(-50%,-50%) scale(1);}
+    50%{opacity:1; transform:translate(-50%,-50%) scale(1.06);}
+  }
+
+  .stage{
+    position:relative;
+    width:min(92vw, 480px);
+    z-index:2;
+  }
+
+  .progress{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    margin-bottom:28px;
+  }
+  .dot{
+    width:8px; height:8px;
+    border-radius:50%;
+    background: rgba(247,236,226,0.18);
+    transition: background .4s ease, transform .4s ease;
+  }
+  .dot.active{
+    background: var(--gold);
+    transform: scale(1.3);
+  }
+  .dot.done{
+    background: var(--rose-deep);
+  }
+
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0));
+    background-color: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 48px 36px 40px;
+    text-align:center;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .card::before{
+    content:"";
+    position:absolute;
+    top:-40%; left:-20%;
+    width:140%; height:140%;
+    background: radial-gradient(circle, rgba(212,175,122,0.06), transparent 60%);
+    pointer-events:none;
+  }
+
+  .eyebrow{
+    font-family: 'Trebuchet MS', sans-serif;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--gold);
+    opacity:0.85;
+    margin-bottom: 14px;
+  }
+
+  h1{
+    font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(24px, 5vw, 32px);
+    line-height:1.35;
+    margin-bottom: 14px;
+    color: var(--ink);
+  }
+
+  p.body-text{
+    font-size: 15.5px;
+    line-height:1.7;
+    color: var(--ink-soft);
+    margin-bottom: 30px;
+  }
+
+  .btn-row{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    position:relative;
+    min-height: 52px;
+  }
+
+  button{
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 14.5px;
+    padding: 13px 28px;
+    border-radius: 999px;
+    border: none;
+    cursor:pointer;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary{
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    color: #2a0f14;
+    font-weight:600;
+    box-shadow: 0 10px 24px -8px rgba(199,107,122,0.6);
+  }
+  .btn-primary:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px -8px rgba(199,107,122,0.75);
+  }
+
+  .btn-ghost{
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid rgba(247,236,226,0.25);
+  }
+  .btn-ghost:hover{
+    border-color: rgba(247,236,226,0.5);
+    color: var(--ink);
+  }
+
+  .btn-dodge{
+    position: relative;
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid rgba(247,236,226,0.2);
+  }
+
+  /* final reveal */
+  .finale{
+    display:none;
+  }
+  .finale.show{
+    display:block;
+    animation: revealIn 0.9s ease forwards;
+  }
+  @keyframes revealIn{
+    from{ opacity:0; transform: scale(0.92);}
+    to{ opacity:1; transform: scale(1);}
+  }
+
+  .finale h1{
+    font-size: clamp(30px, 7vw, 46px);
+    background: linear-gradient(135deg, var(--gold), var(--rose));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .step{
+    display:none;
+  }
+  .step.active{
+    display:block;
+    animation: stepIn 0.55s ease forwards;
+  }
+  @keyframes stepIn{
+    from{ opacity:0; transform: translateY(14px);}
+    to{ opacity:1; transform: translateY(0);}
+  }
+
+  .hearts{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:1;
+  }
+  .heart{
+    position:absolute;
+    bottom:-40px;
+    font-size: 20px;
+    color: var(--rose);
+    opacity:0.85;
+    animation: floatUp linear forwards;
+  }
+  @keyframes floatUp{
+    to{
+      transform: translateY(-110vh) rotate(20deg);
+      opacity:0;
+    }
+  }
+
+  .signature{
+    margin-top: 26px;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 14px;
+    opacity:0;
+    animation: fadeIn 1.2s ease 0.6s forwards;
+  }
+  @keyframes fadeIn{ to{ opacity:0.9; } }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
 </head>
 <body>
 
-<h1 class="logo">🍗 Guntur Pulaos & Filter Coffees ☕</h1>
-<p>Jump while your biryani is getting ready 😋</p>
-<p class="offer">🎁 Score 50 to get <b>10% Discount</b></p>
+<div class="glow"></div>
+<div class="hearts" id="hearts"></div>
 
-<div class="game" id="game">
-  <div id="bg" class="bg"></div>
+<div class="stage">
+  <div class="progress" id="progress"></div>
 
-  <!-- chicken wrapped to avoid flip -->
-  <div id="dragon">
-    <span class="chicken">🐔</span>
+  <div class="card">
+
+    <div class="step active" data-step="0">
+      <div class="eyebrow">A small confession</div>
+      <h1>I know I hurt you.</h1>
+      <p class="body-text">Before anything else — I'm sorry. Really, truly sorry. Can I walk you through something?</p>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goTo(1)">Okay, I'm listening</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="1">
+      <div class="eyebrow">Step one</div>
+      <h1>I should've thought before I acted.</h1>
+      <p class="body-text">You deserved better from me in that moment, and I keep thinking about it.</p>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goTo(2)">I know</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="2">
+      <div class="eyebrow">Step two</div>
+      <h1>Are you still a little mad at me?</h1>
+      <p class="body-text">Be honest. It's okay either way.</p>
+      <div class="btn-row" id="dodgeRow">
+        <button class="btn-primary" onclick="goTo(3)">A little, yeah</button>
+        <button class="btn-dodge" id="noBtn">Not really</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+      <div class="eyebrow">Step three</div>
+      <h1>That's fair. I'd be mad too.</h1>
+      <p class="body-text">But I promise I'm paying attention, and I want to do better — not just say it.</p>
+      <div class="btn-row">
+        <button class="btn-primary" onclick="goTo(4)">Go on</button>
+      </div>
+    </div>
+
+    <div class="step" data-step="4">
+      <div class="eyebrow">Last step</div>
+      <h1>Will you forgive me?</h1>
+      <p class="body-text">No pressure. Just… I hope so.</p>
+      <div class="btn-row">
+        <button class="btn-primary" id="yesBtn" onclick="reveal()">Yes</button>
+        <button class="btn-ghost" id="shrinkBtn">Give me a sec</button>
+      </div>
+    </div>
+
+    <div class="step finale" data-step="5">
+      <div class="eyebrow">The truth</div>
+      <h1>I love you.</h1>
+      <p class="body-text">Thank you for forgiving me, and for putting up with me. I don't take that for granted — not for a second.</p>
+      <div class="signature">— always yours</div>
+    </div>
+
   </div>
-
-  <div id="obstacle">🌶️</div>
-  <div id="ground" class="ground"></div>
 </div>
 
-<h2 id="score">Score: 0</h2>
+<script>
+  const totalSteps = 6; // 0..5, last one is finale
+  const progressEl = document.getElementById('progress');
+  for(let i=0;i<totalSteps-1;i++){ // dots for steps 0..4, finale gets no dot
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0 ? ' active' : '');
+    progressEl.appendChild(d);
+  }
 
-<p id="couponMsg" class="coupon">
-  🎉 You won a 10% DISCOUNT! Show this screen at the counter 😊
-</p>
+  function updateProgress(step){
+    document.querySelectorAll('.dot').forEach((d, i)=>{
+      d.classList.remove('active','done');
+      if(i < step) d.classList.add('done');
+      if(i === step) d.classList.add('active');
+    });
+  }
 
-<p>Tap screen or press SPACE to jump</p>
+  function goTo(step){
+    document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    const target = document.querySelector('.step[data-step="'+step+'"]');
+    target.classList.add('active');
+    if(step < 5) updateProgress(step);
+  }
 
-<button id="restart">🔄 Restart Game</button>
+  // playful dodge button on step 2
+  const noBtn = document.getElementById('noBtn');
+  const dodgeRow = document.getElementById('dodgeRow');
+  noBtn.addEventListener('mouseenter', ()=>{
+    const maxX = 90, maxY = 40;
+    const x = (Math.random()*2-1)*maxX;
+    const y = (Math.random()*2-1)*maxY;
+    noBtn.style.transform = `translate(${x}px, ${y}px)`;
+  });
+  noBtn.addEventListener('click', ()=>{
+    // if they ever manage to click it, just be sweet about it
+    goTo(3);
+  });
 
-<script src="script.js?v=NOFULL"></script>
+  // "give me a sec" shrinks and yes grows, every click
+  const yesBtn = document.getElementById('yesBtn');
+  const shrinkBtn = document.getElementById('shrinkBtn');
+  let scale = 1;
+  shrinkBtn.addEventListener('click', ()=>{
+    scale = Math.max(0.35, scale - 0.15);
+    shrinkBtn.style.transform = `scale(${scale})`;
+    shrinkBtn.style.opacity = scale;
+    yesBtn.style.transform = `scale(${1 + (1-scale)})`;
+  });
+
+  function reveal(){
+    goTo(5);
+    launchHearts();
+  }
+
+  function launchHearts(){
+    const container = document.getElementById('hearts');
+    const symbols = ['♥','❤','♡'];
+    const count = 40;
+    for(let i=0;i<count;i++){
+      setTimeout(()=>{
+        const h = document.createElement('div');
+        h.className = 'heart';
+        h.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+        h.style.left = Math.random()*100 + 'vw';
+        h.style.fontSize = (14 + Math.random()*22) + 'px';
+        const duration = 4 + Math.random()*3;
+        h.style.animationDuration = duration + 's';
+        container.appendChild(h);
+        setTimeout(()=>h.remove(), duration*1000);
+      }, i*90);
+    }
+  }
+</script>
+
 </body>
 </html>
